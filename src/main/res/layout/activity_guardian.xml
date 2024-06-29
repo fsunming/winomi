@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/guardianLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#AAEBAA"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_margin="17dp"
+        android:background="#DDD">
+
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!--Button
+            android:id="@+id/button_view_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="지도보기" /-->
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/guardianWidget"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:layout_margin="10dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/g_imageLayout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <ImageView
+                android:id="@+id/g_protectImg"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="4"
+                android:layout_marginBottom="5dp"
+                android:background="#EEE" />
+
+            <EditText
+                android:id="@+id/g_pImgInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/roundwhite"
+                android:hint="이미지에 대한 설명을 입력하세요" />
+
+            <Button
+                android:id="@+id/g_selectImgBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:background="@drawable/g_btn"
+                android:text="이미지 선택" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/g_etcLayout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#AAEBAA"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/g_protectDAInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/roundwhite"
+                android:text="출발/도착 정보가 여기 표시됩니다"
+                android:gravity="center"/>
+
+            <TextView
+                android:id="@+id/g_noticeBoard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="게시판"
+                android:gravity="center"
+                android:background="@drawable/roundwhite"/>
+
+            <Button
+                android:id="@+id/g_callBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/call"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:text="전화하기" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

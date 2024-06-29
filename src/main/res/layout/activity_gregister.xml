@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/wnm_color">
+
+    <LinearLayout
+        android:id="@+id/guardianInfo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/guardianTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="@font/cookierun_black"
+            android:text="보 호 자"
+            android:textColor="@color/wnmfont_color"
+            android:textSize="30dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/guardianTitle"
+            android:layout_marginHorizontal="17dp"
+            android:layout_marginVertical="17dp"
+            android:background="@drawable/roundwhite"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/enterGID"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="17dp"
+                android:layout_marginTop="17dp"
+                android:layout_marginBottom="17dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="아이디: "
+                    android:textSize="13dp" />
+
+                <EditText
+                    android:id="@+id/guardianId"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="아이디를 입력하세요"
+                    android:textSize="13dp" />
+
+                <Button
+                    android:id="@+id/gidDupBtn"
+                    android:layout_width="68dp"
+                    android:layout_height="34dp"
+                    android:background="@drawable/idcheck_btn"
+                    android:fontFamily="@font/cookierun_regular"
+                    android:text="중복 확인"
+                    android:textSize="13dp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/gIDwarning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/enterGID"
+                android:layout_marginHorizontal="17dp"
+                android:text=""
+                android:textColor="#FF0000"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/gIDdupwarning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/enterGID"
+                android:layout_marginHorizontal="17dp"
+                android:text=""
+                android:textColor="#FF0000"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/enterGPW"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/enterGID"
+                android:layout_marginHorizontal="17dp"
+                android:layout_marginBottom="17dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="비밀번호 : "
+                    android:textSize="13dp" />
+
+                <EditText
+                    android:id="@+id/guardianPW"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="비밀번호를 입력하세요"
+                    android:textSize="13dp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/gPWwarning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/enterGPW"
+                android:layout_marginHorizontal="17dp"
+                android:text=""
+                android:textColor="#FF0000"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/checkGPW"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/enterGPW"
+                android:layout_marginHorizontal="17dp"
+                android:layout_marginBottom="17dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="비밀번호 확인 : "
+                    android:textSize="13dp" />
+
+                <EditText
+                    android:id="@+id/guardianPW2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="입력한 비밀번호 확인"
+                    android:textSize="13dp" />
+
+                <TextView
+                    android:id="@+id/gPWcheck"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/gPWmatchwarning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/checkGPW"
+                android:layout_marginHorizontal="17dp"
+                android:text=""
+                android:textColor="#FF0000"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/enterGName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/checkGPW"
+                android:layout_marginHorizontal="17dp"
+                android:layout_marginBottom="17dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="이름 : "
+                    android:textSize="13dp" />
+
+                <EditText
+                    android:id="@+id/guardianName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/enterGBirth"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/enterGName"
+                android:layout_marginHorizontal="17dp"
+                android:layout_marginBottom="17dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="생년월일 : "
+                    android:textSize="13dp" />
+
+                <EditText
+                    android:id="@+id/guardianBirth"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/enterGSex"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="17dp"
+                android:layout_below="@id/enterGBirth"
+                android:layout_gravity="center_horizontal">
+
+                <RadioGroup
+                    android:id="@+id/guardianSex"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:textSize="13dp">
+
+                    <RadioButton
+                        android:id="@+id/gsexM"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="17dp"
+                        android:text="남" />
+
+                    <RadioButton
+                        android:id="@+id/gsexF"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="17dp"
+                        android:text="여" />
+                </RadioGroup>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/enterGNum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/enterGSex"
+                android:layout_marginHorizontal="17dp"
+                android:layout_marginBottom="17dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="전화번호 : "
+                    android:textSize="13dp" />
+
+                <EditText
+                    android:id="@+id/guardianNum"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/enterGAdres"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/enterGNum"
+                android:layout_marginHorizontal="17dp"
+                android:layout_marginBottom="17dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="주소 : "
+                    android:textSize="13dp" />
+
+                <EditText
+                    android:id="@+id/guardianAdres"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/regGBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:onClick="ClickButton1"
+            android:background="@drawable/join_btn"
+            android:text="회원가입"
+            android:fontFamily="@font/cookierun_regular"
+            android:textColor="@color/white"
+            android:textSize="13dp" />
+    </LinearLayout>
+</LinearLayout>

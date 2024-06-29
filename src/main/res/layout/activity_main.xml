@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MapsActivity">
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+
+    <Spinner
+        android:id="@+id/spinner1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/spinner01"/>
+
+    <Spinner
+        android:id="@+id/spinner2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/gangwondo"/>
+
+    <Spinner
+        android:id="@+id/spinner3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/gyeonggido"/>
+
+    <Spinner
+        android:id="@+id/spinner4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/gyeongnam"/>
+
+    <Spinner
+        android:id="@+id/spinner5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/gyeongbuk"/>
+
+    <Spinner
+        android:id="@+id/spinner6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/gwangju"/>
+
+    <Spinner
+        android:id="@+id/spinner7"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/daegu"/>
+
+    <Spinner
+        android:id="@+id/spinner8"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/daejeon"/>
+
+    <Spinner
+        android:id="@+id/spinner9"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/busan"/>
+
+    <Spinner
+        android:id="@+id/spinner10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/seoul"/>
+
+    <Spinner
+        android:id="@+id/spinner11"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/sejong"/>
+
+    <Spinner
+        android:id="@+id/spinner12"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/ulsan"/>
+
+    <Spinner
+        android:id="@+id/spinner13"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/incheon"/>
+
+
+    <Spinner
+        android:id="@+id/spinner14"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/jeonnam"/>
+
+    <Spinner
+        android:id="@+id/spinner15"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/jeonbuk"/>
+
+    <Spinner
+        android:id="@+id/spinner16"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/jeju"/>
+
+    <Spinner
+        android:id="@+id/spinner17"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/chungnam"/>
+
+    <Spinner
+        android:id="@+id/spinner18"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/chungbuk"/>
+
+
+</LinearLayout>

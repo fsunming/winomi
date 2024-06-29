@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "949298988961",
+    "project_id": "onto1592",
+    "storage_bucket": "onto1592.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:949298988961:android:28dc8162873ec7e3f52de0",
+        "android_client_info": {
+          "package_name": "com.example.onto_1921"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtqLYc6tJ5XM_IhO-Z5ILF-Tfw1TNIRLY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

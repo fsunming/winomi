@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/g_color">
+
+    <TextView
+        android:id="@+id/post_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="17dp"
+        android:fontFamily="@font/cookierun_black"
+        android:text="게시판"
+        android:textColor="@color/gfont_color"
+        android:textSize="30dp"/>
+
+    <Button
+        android:id="@+id/write_post_button"
+        android:layout_width="85dp"
+        android:layout_height="34dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="23dp"
+        android:layout_marginEnd="17dp"
+        android:background="@drawable/g_btn"
+        android:fontFamily="@font/cookierun_regular"
+        android:text="게시글 작성"
+        android:textSize="13dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewPosts"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="17dp"
+        android:layout_below="@id/write_post_button"
+        android:background="@drawable/roundwhite"/>
+
+</RelativeLayout>

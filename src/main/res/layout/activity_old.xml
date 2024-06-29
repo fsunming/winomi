@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#A5D8FA"
+    android:orientation="vertical">
+
+    <!-- 상단 1/3 지도를 대신할 네모난 도형 -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_weight="1"
+        android:layout_margin="17dp"
+        android:background="#DDD">
+
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <Button
+            android:id="@+id/button_view_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="지도보기" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/guardianInfoTextView"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_weight="2"
+        android:layout_marginHorizontal="17dp"
+        android:layout_marginBottom="5dp"
+        android:background="@drawable/roundwhite"
+        android:padding="8dp"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+
+    <!-- 하단 2/3 정보 입력 및 표시 위젯, 긴급 전화 버튼 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/callGuardianButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="17dp"
+            android:background="@drawable/roundwhite"
+            android:text="보호자에게 전화하기"/>
+    </LinearLayout>
+    <!-- 하단 버튼: 112 전화 및 SOS -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginHorizontal="9dp"
+        android:padding="8dp">
+
+        <Button
+            android:id="@+id/call112Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginVertical="5dp"
+            android:background="@drawable/call112"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:text="112 전화하기" />
+
+        <Button
+            android:id="@+id/sosButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginVertical="5dp"
+            android:background="@drawable/sos"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:text="SOS" />
+    </LinearLayout>
+</LinearLayout>

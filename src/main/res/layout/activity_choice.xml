@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/wnm_color">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="85dp"
+        android:text="회 원 가 입"
+        android:textSize="40dp"
+        android:textColor="@color/wnmfont_color"
+        android:fontFamily="@font/cookierun_black"
+        android:layout_gravity="center_horizontal"/>
+
+    <RadioGroup
+        android:id="@+id/choiceModeRG"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="204dp"
+        android:orientation="horizontal">
+        <RadioButton
+            android:id="@+id/pttRbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="17dp"
+            android:text="보호자"/>
+        <RadioButton
+            android:id="@+id/ptRbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="17dp"
+            android:text="보호대상자" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/nextBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="34dp"
+        android:layout_gravity="center_horizontal"
+        android:text="선 택"
+        android:layout_below="@id/choiceModeRG"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="153dp"
+        android:background="@drawable/join_btn"
+        android:fontFamily="@font/cookierun_regular"
+        android:textColor="@color/white"
+        />
+
+</LinearLayout>
