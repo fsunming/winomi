@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
@@ -25,7 +26,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -34,6 +34,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -47,19 +48,18 @@ import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.WebSocket;
-import okhttp3.WebSocketListener;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 
 public class GuardianActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private FusedLocationProviderClient fusedLocationClient;
     private static final int PERMISSION_REQUEST_ACCESS_FINE_LOCATION = 1001;
     private GoogleMap mMap;
-    private WebSocket webSocket;
-    private OkHttpClient client;
     private static final int REQUEST_CODE_PICK_IMAGE = 1;
     private static final String urls = "http://192.168.219.104:8080";
     private Button selectImgBtn;
@@ -68,6 +68,32 @@ public class GuardianActivity extends AppCompatActivity implements OnMapReadyCal
     private UploadService uploadService;
     private ActivityResultLauncher<Intent> galleryLauncher;
     private UserService userService;
+    private Handler handler = new Handler();
+    private Runnable fetchLocationsRunnable = new Runnable() {
+        @Override
+        public void run() {
+            new FetchLatestLocationsTask().execute();
+            handler.postDelayed(this, 60000); // 1분마다 실행
+        }
+    };
+
+    private float[] markerColors = {
+            BitmapDescriptorFactory.HUE_RED,
+            BitmapDescriptorFactory.HUE_BLUE,
+            BitmapDescriptorFactory.HUE_GREEN,
+            BitmapDescriptorFactory.HUE_ORANGE,
+            BitmapDescriptorFactory.HUE_YELLOW,
+            BitmapDescriptorFactory.HUE_CYAN,
+            BitmapDescriptorFactory.HUE_MAGENTA,
+            BitmapDescriptorFactory.HUE_ROSE,
+            BitmapDescriptorFactory.HUE_VIOLET,
+            BitmapDescriptorFactory.HUE_AZURE
+    };
+
+    // 보호대상자에게 고유한 색상을 할당하는 함수
+    private BitmapDescriptor getMarkerColor(int index) {
+        return BitmapDescriptorFactory.defaultMarker(markerColors[index % markerColors.length]);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,16 +141,13 @@ public class GuardianActivity extends AppCompatActivity implements OnMapReadyCal
         // 외부 저장소 쓰기 권한 요청
         requestPermissionsAndOpenGallery();
 
-        client = new OkHttpClient();
-        startWebSocket();
-
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         // 프래그먼트에서 지도를 가져와 준비가 되면 콜백을 받습니다.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        new FetchLatestLocationTask().execute();
+        new FetchLatestLocationsTask().execute();
     }
 
     // 토스트 메세지 출력 메소드
@@ -132,31 +155,12 @@ public class GuardianActivity extends AppCompatActivity implements OnMapReadyCal
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 
-    private void startWebSocket() {
-        Request request = new Request.Builder().url("ws://192.168.219.104:8080/locationUpdates").build();
-        webSocket = client.newWebSocket(request, new WebSocketListener() {
-            @Override
-            public void onMessage(@NonNull WebSocket webSocket, @NonNull String text) {
-                runOnUiThread(() -> {
-                    try {
-                        JSONObject jsonObject = new JSONObject(text);
-                        double latitude = jsonObject.getDouble("latitude");
-                        double longitude = jsonObject.getDouble("longitude");
-                        updateMap(new LatLng(latitude, longitude));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }
-        });
-    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // 위치 권한 확인
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        // 위치 권한이 부여되어 있는지 확인
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_ACCESS_FINE_LOCATION);
             return;
         }
@@ -164,22 +168,23 @@ public class GuardianActivity extends AppCompatActivity implements OnMapReadyCal
         mMap.setMyLocationEnabled(true);
     }
 
-    private void updateMap(LatLng latLng) {
-        mMap.clear();
-        mMap.addMarker(new MarkerOptions().position(latLng).title("Protected User Location"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // 주기적으로 위치를 갱신하는 Runnable 실행
+        handler.post(fetchLocationsRunnable);
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        webSocket.close(1000, null);
+    protected void onPause() {
+        super.onPause();
+        // 주기적으로 위치를 갱신하는 Runnable 중지
+        handler.removeCallbacks(fetchLocationsRunnable);
     }
 
-    private class FetchLatestLocationTask extends AsyncTask<Void, Void, JSONObject> {
-
+    private class FetchLatestLocationsTask extends AsyncTask<Void, Void, JSONArray> {
         @Override
-        protected JSONObject doInBackground(Void... voids) {
+        protected JSONArray doInBackground(Void... voids) {
             String userId = SharedPreferencesUtil.getUserId(GuardianActivity.this);
             OkHttpClient client = new OkHttpClient();
             JSONObject jsonInput = new JSONObject();
@@ -194,14 +199,14 @@ public class GuardianActivity extends AppCompatActivity implements OnMapReadyCal
             );
             Request request = new Request.Builder()
                     .post(reqBody)
-                    .url(urls + "/setlocation") // 서버의 최신 위치 정보를 가져오는 엔드포인트 URL
+                    .url(urls + "/getlocations") // 서버의 여러 위치 정보를 가져오는 엔드포인트 URL
                     .build();
 
             try {
                 okhttp3.Response response = client.newCall(request).execute();
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string(); // 문자열 데이터로 변환
-                    return new JSONObject(responseBody);
+                    return new JSONArray(responseBody);
                 }
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
@@ -210,23 +215,41 @@ public class GuardianActivity extends AppCompatActivity implements OnMapReadyCal
         }
 
         @Override
-        protected void onPostExecute(JSONObject jsonResponse) {
+        protected void onPostExecute(JSONArray jsonResponse) {
             super.onPostExecute(jsonResponse);
             if (jsonResponse != null) {
                 try {
-                    double latitude = jsonResponse.getDouble("latitude");
-                    double longitude = jsonResponse.getDouble("longitude");
+                    // 모든 마커 삭제
+                    mMap.clear();
 
-                    // 받아온 위치 정보를 이용하여 지도에 마커 표시 등의 작업 수행
-                    LatLng latLng = new LatLng(latitude, longitude);
-                    mMap.addMarker(new MarkerOptions().position(latLng).title("Last Known Location"));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                    for (int i = 0; i < jsonResponse.length(); i++) {
+                        JSONObject location = jsonResponse.getJSONObject(i);
+                        double latitude = location.getDouble("latitude");
+                        double longitude = location.getDouble("longitude");
+                        String protectName = location.getString("protect_name");
+
+                        // 받아온 위치 정보를 이용하여 지도에 마커 표시 등의 작업 수행
+                        LatLng latLng = new LatLng(latitude, longitude);
+                        mMap.addMarker(new MarkerOptions()
+                                .position(latLng)
+                                .title(protectName)
+                                .icon(getMarkerColor(i)));
+                    }
+
+                    // 카메라를 첫번째 위치로 이동 (원하는 위치로 수정 가능)
+                    if (jsonResponse.length() > 0) {
+                        JSONObject firstLocation = jsonResponse.getJSONObject(0);
+                        double firstLatitude = firstLocation.getDouble("latitude");
+                        double firstLongitude = firstLocation.getDouble("longitude");
+                        LatLng firstLatLng = new LatLng(firstLatitude, firstLongitude);
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(firstLatLng, 15));
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                     showToastMessage("서버 응답 데이터를 처리하는 중 오류가 발생했습니다.");
                 }
             } else {
-                showToastMessage("서버로부터 응답을 받을 수 없습니다.");
+                //showToastMessage("서버로부터 응답을 받을 수 없습니다.");
             }
         }
     }
@@ -286,7 +309,7 @@ public class GuardianActivity extends AppCompatActivity implements OnMapReadyCal
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission is granted
                 onMapReady(mMap);
-                openGallery();
+                //openGallery();
             } else {
                 // Permission denied
                 return;
@@ -353,3 +376,4 @@ public class GuardianActivity extends AppCompatActivity implements OnMapReadyCal
         });
     }
 }
+

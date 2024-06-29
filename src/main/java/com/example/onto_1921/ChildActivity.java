@@ -80,10 +80,11 @@ public class ChildActivity extends AppCompatActivity implements OnMapReadyCallba
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        locationRequest = LocationRequest.create();
-        locationRequest.setInterval(60000); // 1분
-        locationRequest.setFastestInterval(30000); // 30초
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        // LocationRequest 초기화
+        locationRequest = LocationRequest.create()
+                .setInterval(60000) // 1분마다 위치 업데이트
+                .setFastestInterval(60000)
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         // 위치 업데이트 시작
         startLocationUpdates();
@@ -158,66 +159,99 @@ public class ChildActivity extends AppCompatActivity implements OnMapReadyCallba
 
     // 위치 업데이트 시작 메서드
     private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        // 위치 권한이 있는지 확인
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+        } else {
+            // 권한 요청
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_ACCESS_FINE_LOCATION);
-            return;
         }
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
     }
 
     // LocationCallback 구현
     private LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
-            if (locationResult == null) {
-                return;
-            }
-            for (Location location : locationResult.getLocations()) {
-                // 위치를 서버로 전송
-                sendLocationToServer(location);
+            super.onLocationResult(locationResult);
+            // 새로운 위치 업데이트가 있을 때 호출됨
+            if (locationResult != null) {
+                Location location = locationResult.getLastLocation();
+                // 위치 정보를 데이터베이스에 저장할 수 있습니다.
+                if (location != null) {
+                    double latitude = location.getLatitude();
+                    double longitude = location.getLongitude();
+                    sendLocationToServer(latitude, longitude);
+                }
             }
         }
     };
 
     // 서버로 위치 정보 전송
-    private void sendLocationToServer(Location location) {
-        String userId = SharedPreferencesUtil.getUserId(this);
-        OkHttpClient client = new OkHttpClient();
-        JSONObject jsonInput = new JSONObject();
-        // 현재 시간 가져오기
-        long now = System.currentTimeMillis();
-        // Date 생성하기
-        Date date = new Date(now);
-        // 가져오고 싶은 형식으로 가져오기
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String dateTime = sdf.format(date);
-        try {
-            jsonInput.put("userid", userId);
-            jsonInput.put("date_time", dateTime);
-            jsonInput.put("latitude", location.getLatitude());
-            jsonInput.put("longitude", location.getLongitude());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        RequestBody reqBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), jsonInput.toString());
-        Request request = new Request.Builder()
-                .post(reqBody)
-                .url(urls + "/sendlocation")
-                .build();
+    private void sendLocationToServer(double latitude, double longitude) {
+        // 서버에 위치 정보 전송
+        new SendLocationTask().execute(latitude, longitude);
+    }
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
+    // 현재 위치 전송 AsyncTask
+    public class SendLocationTask extends AsyncTask<Double, Void, String> {
+        @Override
+        protected String doInBackground(Double... params) {
+            try {
+                OkHttpClient client = new OkHttpClient();
+
+                String userid = SharedPreferencesUtil.getUserId(ChildActivity.this);
+
+                double latitude = params[0];
+                double longitude = params[1];
+                // 현재 시간 가져오기
+                long now = System.currentTimeMillis();
+                // Date 생성하기
+                Date date = new Date(now);
+                // 가져오고 싶은 형식으로 가져오기
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String dateTime = sdf.format(date);
+
+                // JSON 데이터 생성
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("userid", userid);
+                jsonParam.put("date_time", dateTime);
+                jsonParam.put("latitude", latitude);
+                jsonParam.put("longitude", longitude);
+
+                RequestBody reqBody = RequestBody.create(
+                        MediaType.parse("application/json; charset=utf-8"),
+                        jsonParam.toString()
+                );
+
+                Request request = new Request.Builder()
+                        .post(reqBody)
+                        .url(urls + "/sendlocation")
+                        .build();
+
+                Response responses = client.newCall(request).execute();
+                if (responses.isSuccessful()) {
+                    return "success"; // 성공했음을 onPostExecute로 전달
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
+            return null;
+        }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    throw new IOException("Unexpected code " + response);
-                }
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if (result != null && result.equals("success")) {
+                // 성공했을 때 메시지를 표시합니다.
+                showToastMessage("위치 등록 성공");
+            } else {
+                // 실패했을 경우
+                showToastMessage("위치 등록 실패");
             }
-        });
+        }
     }
 
     @Override

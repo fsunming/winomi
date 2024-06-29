@@ -21,14 +21,14 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+//게시판 목록
 public class GpostActivity extends AppCompatActivity {
 
     private Button write_post_button;
     private RecyclerView recyclerView;
     private PostAdapter postAdapter;
-    private List<Post> postList; // postList 변수 추가
-
-    private static final String urls = "http://localhost:8080";
+    private List<Post> postList;
+    private static final String urls = "http://192.168.219.104:8080";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +50,12 @@ public class GpostActivity extends AppCompatActivity {
 
         // 게시글 목록 가져오기
         fetchPostList();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fetchPostList(); // 화면이 다시 보일 때마다 게시글 목록을 새로 불러옴
     }
 
     private void fetchPostList() {
@@ -94,10 +100,11 @@ public class GpostActivity extends AppCompatActivity {
         JSONArray jsonArray = jsonObject.getJSONArray("post"); // "post" 키를 가진 JSON 배열 추출
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject postObject = jsonArray.getJSONObject(i);
+            String postId = postObject.getString("post_id");
             String title = postObject.getString("title");
             String content = postObject.getString("content");
-            String authorId = postObject.getString("author_id"); // 키 이름 수정(author_id)
-            postList.add(new Post(title, content, authorId));
+            String authorId = postObject.getString("author_id");
+            postList.add(new Post(postId, title, content, authorId));
         }
         return postList;
     }

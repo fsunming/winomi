@@ -125,7 +125,7 @@ public  class LoginActivity extends Activity {
                                 public void run() {
                                     SharedPreferencesUtil.saveUserId(LoginActivity.this, userid);
 
-                                    Toast.makeText(LoginActivity.this, "로그인 성공" + userid, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(LoginActivity.this, "로그인 성공", Toast.LENGTH_SHORT).show();
                                     // 다음 화면으로 이동
                                     Intent intent;
                                     if ("guardian".equals(table)) {

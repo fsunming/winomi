@@ -20,10 +20,11 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+//게시글 작성
 public class GpostwriteActivity extends AppCompatActivity {
     private EditText etPostTitle, etPostContent;
     private Button btnSubmitPost;
-    private static final String urls = "http://localhost:8080";
+    private static final String urls = "http://192.168.219.104:8080";
 
     @Override
     protected void onCreate(Bundle savedInstatnceState){

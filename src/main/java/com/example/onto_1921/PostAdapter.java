@@ -41,6 +41,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 // 클릭한 게시글의 상세 내용을 보여주는 화면으로 이동하는 인텐트를 생성
                 Intent intent = new Intent(v.getContext(), GpostDetailActivity.class);
                 // 인텐트에 클릭한 게시글의 정보를 추가
+                intent.putExtra("postId", clickedPost.getPostId());
                 intent.putExtra("title", clickedPost.getTitle());
                 intent.putExtra("content", clickedPost.getContent());
                 intent.putExtra("authorId", clickedPost.getAuthorId());
@@ -49,7 +50,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
         });
     }
-
 
     @Override
     public int getItemCount() {

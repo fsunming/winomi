@@ -1,12 +1,15 @@
 package com.example.onto_1921;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,7 +49,7 @@ import okhttp3.Response;
 public class OldActivity extends AppCompatActivity implements OnMapReadyCallback {
     private FusedLocationProviderClient fusedLocationClient;
     private static final int PERMISSION_REQUEST_ACCESS_FINE_LOCATION = 1001;
-    private GoogleMap mMap;
+    private GoogleMap googleMap;
     private LocationRequest locationRequest;
     private TextView guardianInfoTextView;
     private static final String urls = "http://192.168.219.104:8080";
@@ -56,6 +59,15 @@ public class OldActivity extends AppCompatActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_old);
 
         guardianInfoTextView = findViewById(R.id.guardianInfoTextView);
+
+        Button viewLocationButton = findViewById(R.id.button_view_location);
+        viewLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(OldActivity.this, MapsActivity.class);
+                startActivity(intent);
+            }
+        });
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -84,24 +96,23 @@ public class OldActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+        this.googleMap = googleMap;
 
-        // 위치 권한이 부여되어 있는지 확인
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_ACCESS_FINE_LOCATION);
-            return;
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            googleMap.setMyLocationEnabled(true);
+
+            // 현재 위치 가져오기
+            fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+                if (location != null) {
+                    LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                    //MarkerOptions markerOptions = new MarkerOptions().position(currentLatLng).title("현재 위치");
+                    //googleMap.addMarker(markerOptions);
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15));
+                } else {
+                    showToastMessage("현재 위치를 가져올 수 없습니다.");
+                }
+            });
         }
-        // 현재 위치 가져오기
-        fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
-            if (location != null) {
-                LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                //mMap.addMarker(new MarkerOptions().position(currentLocation).title("현재 위치"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
-                mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
-                // 현재 위치의 위도와 경도를 토스트 메시지로 표시
-                Toast.makeText(OldActivity.this, "현재 위치 - 위도: " + location.getLatitude() + ", 경도: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     @Override
@@ -110,7 +121,7 @@ public class OldActivity extends AppCompatActivity implements OnMapReadyCallback
         if (requestCode == PERMISSION_REQUEST_ACCESS_FINE_LOCATION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // 권한 허용됨
-                onMapReady(mMap);
+                onMapReady(googleMap);
             } else {
                 // 권한 거부됨
                 showToastMessage("위치 권한이 필요합니다.");
@@ -129,10 +140,6 @@ public class OldActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    // 현재 위치 마커를 추적하는 변수 추가
-    private Marker currentLocationMarker;
-
-
     // LocationCallback 구현
     private LocationCallback locationCallback = new LocationCallback() {
         @Override
@@ -146,41 +153,6 @@ public class OldActivity extends AppCompatActivity implements OnMapReadyCallback
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
                     sendLocationToServer(latitude, longitude);
-
-                    // 현재 위치 생성
-                    LatLng currentLocation = new LatLng(latitude, longitude);
-
-                    if (currentLocationMarker == null) {
-                        // 마커 생성
-                        MarkerOptions markerOptions = new MarkerOptions()
-                                .position(currentLocation) // 현재 위치로 설정
-                                .title("현재 위치"); // 제목 설정 등
-
-                        // 마커 추가 및 currentLocationMarker에 할당
-                        currentLocationMarker = mMap.addMarker(markerOptions);
-                    } else {
-                        // 현재 위치 마커 업데이트
-                        currentLocationMarker.setPosition(currentLocation);
-                    }
-
-                    // 이전 위치와 현재 위치 사이의 거리 계산
-                    if (currentLocationMarker != null) {
-                        LatLng previousLocation = currentLocationMarker.getPosition();
-                        float[] distance = new float[1];
-                        Location.distanceBetween(previousLocation.latitude, previousLocation.longitude, currentLocation.latitude, currentLocation.longitude, distance);
-
-                        // 거리가 일정 값 이상이면 지도 이동
-                        if (distance[0] > 1) { // 예시 거리: 1 미터
-                            // 이전 위치와 현재 위치의 중간 지점 계산하여 지도 이동
-                            LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                            builder.include(previousLocation);
-                            builder.include(currentLocation);
-                            LatLngBounds bounds = builder.build();
-                            int padding = 100; // px
-                            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-                            mMap.animateCamera(cu);
-                        }
-                    }
                 }
             }
         }
